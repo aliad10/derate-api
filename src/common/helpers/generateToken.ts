@@ -1,3 +1,3 @@
-export function randint(min: number, max: number): number {
-  return Math.floor(Math.random() * (max - min) + min);
+export function generateToken(min: number, max: number): string {
+  return Math.floor(Math.random() * (max - min) + min).toString();
 }

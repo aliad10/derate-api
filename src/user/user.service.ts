@@ -1,11 +1,11 @@
-import { Injectable } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
-import { Connection } from 'mongoose';
-import { resultHandler } from 'src/common/helpers';
-import { Result } from 'src/database/interfaces/result.interface';
-import { CreateUserDto, GetUserMeDto, UserDto } from './dtos';
-import { User } from './schemas';
-import { UserRepository } from './user.repository';
+import { Injectable } from "@nestjs/common";
+import { InjectConnection } from "@nestjs/mongoose";
+import { Connection } from "mongoose";
+import { resultHandler } from "src/common/helpers";
+import { Result } from "src/database/interfaces/result.interface";
+import { CreateUserDto, GetUserMeDto, UserDto } from "./dtos";
+import { User } from "./schemas";
+import { UserRepository } from "./user.repository";
 
 @Injectable()
 export class UserService {
@@ -18,7 +18,7 @@ export class UserService {
   async create(user: CreateUserDto): Promise<Result<User>> {
     const data = await this.userRepository.create({ ...user });
 
-    return resultHandler(201, 'user created', data);
+    return resultHandler(201, "user created", data);
   }
 
   async findUser(
@@ -26,13 +26,15 @@ export class UserService {
     projection?: Record<string, number>
   ): Promise<Result<User>> {
     const data = await this.userRepository.findOne(query, { ...projection });
-
-    return resultHandler(200, 'user data', data);
+    if (!data) {
+      return resultHandler(404, "user data not found", "");
+    }
+    return resultHandler(200, "user data", data);
   }
 
   async getUserList(filter = {}): Promise<Result<User[]>> {
     const userList = await this.userRepository.find(filter);
-    return resultHandler(200, 'user list', userList);
+    return resultHandler(200, "user list", userList);
   }
 
   async findUserByWallet(
@@ -44,9 +46,9 @@ export class UserService {
       { ...projection }
     );
     if (!user) {
-      return resultHandler(404, 'user not found', null);
+      return resultHandler(404, "user not found", null);
     }
-    return resultHandler(200, 'user data', user);
+    return resultHandler(200, "user data", user);
   }
 
   async findUserById(
@@ -59,9 +61,9 @@ export class UserService {
     );
 
     if (!user) {
-      return resultHandler(404, 'user not found', null);
+      return resultHandler(404, "user not found", null);
     }
-    return resultHandler(200, 'user data', user);
+    return resultHandler(200, "user data", user);
   }
   async updateUserById(
     userId: string,
@@ -74,7 +76,7 @@ export class UserService {
       removeDataList
     );
 
-    return resultHandler(200, 'user updated', result);
+    return resultHandler(200, "user updated", result);
   }
 
   async getUserData(userId: string): Promise<Result<GetUserMeDto>> {
@@ -101,12 +103,12 @@ export class UserService {
       projection
     );
 
-    return resultHandler(200, 'user data', userList);
+    return resultHandler(200, "user data", userList);
   }
 
   async getUserCount(filter): Promise<Result<number>> {
     const userCount = this.userRepository.count(filter);
 
-    return resultHandler(200, 'user count', userCount);
+    return resultHandler(200, "user count", userCount);
   }
 }

@@ -14,20 +14,8 @@ export class CreateUserDto {
   email?;
 
   @IsOptional()
-  @IsDate()
-  emailVerifiedAt?;
-
-  @IsOptional()
-  @IsString()
-  mobile?;
-
-  @IsOptional()
-  @IsString()
-  mobileCountry?;
-
-  @IsOptional()
-  @IsDate()
-  mobileVerifiedAt?;
+  @IsBoolean()
+  emailVerified?;
 
   @IsOptional()
   @IsDate()
@@ -38,28 +26,9 @@ export class CreateUserDto {
   updatedAt?;
 
   @IsOptional()
-  @IsNumber()
-  mobileCodeRequestsCountForToday?;
-
-  @IsOptional()
-  @IsNumber()
-  userStatus?;
-
-  @IsOptional()
-  @IsString()
-  firstName?;
-
-  @IsOptional()
-  @IsString()
-  lastName?;
-
-  @IsOptional()
   @IsString()
   walletAddress?;
 
   @IsNumber()
   nonce: number;
-
-  @IsNumber()
-  plantingNonce;
 }

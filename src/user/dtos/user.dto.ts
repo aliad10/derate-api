@@ -22,62 +22,22 @@ export class UserDto {
   email?: string;
 
   @IsOptional()
-  @IsString()
-  firstName?: string;
-
-  @IsOptional()
-  @IsString()
-  lastName?: string;
-
-  @IsOptional()
   @IsNumber()
   nonce?: number;
-
-  @IsOptional()
-  @IsNumber()
-  plantingNonce?: number;
-
-  @IsOptional()
-  @IsNumber()
-  userRole?;
 
   @IsOptional()
   @IsDate()
   updatedAt?;
 
   @IsOptional()
-  @IsDate()
-  emailVerifiedAt?;
+  @IsBoolean()
+  emailVerified?;
 
   @IsOptional()
   @IsString()
-  mobile?;
+  emailCode?;
 
   @IsOptional()
-  @IsDate()
-  mobileVerifiedAt?;
-
-  @IsOptional()
-  @IsDate()
-  mobileCodeRequestedAt?;
-
-  @IsOptional()
-  @IsNumber()
-  mobileCode?;
-
-  @IsOptional()
-  @IsNumber()
-  mobileCodeRequestsCountForToday?;
-
-  @IsOptional()
-  @IsString()
-  mobileCountry?;
-
-  @IsOptional()
-  @IsNumber()
-  userStatus?;
-
-  @IsOptional()
-  @IsString()
-  idCard?;
+  @IsBoolean()
+  emailCodeIssuedAt?;
 }

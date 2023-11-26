@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
 
 export type UserDocument = User & Document;
 
@@ -12,19 +12,19 @@ export class User extends Document {
   nonce;
 
   @Prop({ type: String })
-  twitter;
-
-  @Prop({ type: String })
   email;
 
-  @Prop({ type: Date })
-  emailVerifiedAt;
+  @Prop({ type: Boolean })
+  emailVerified;
 
-  @Prop({ type: Number })
+  @Prop({ type: String })
   emailCode;
 
   @Prop({ type: Date })
   emailCodeIssuedAt;
+
+  @Prop({ type: String })
+  twitter;
 
   @Prop({ type: Date, default: () => new Date(), required: true })
   createdAt;

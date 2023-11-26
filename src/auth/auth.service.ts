@@ -4,29 +4,34 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
+} from "@nestjs/common";
 
-import { ConfigService } from '@nestjs/config';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from './../user/user.service';
+import { ConfigService } from "@nestjs/config";
+import { JwtService } from "@nestjs/jwt";
+import { UserService } from "./../user/user.service";
 
-import { Result } from 'src/database/interfaces/result.interface';
-import { AuthErrorMessages, Messages } from './../common/constants';
+import { Result } from "src/database/interfaces/result.interface";
+import { AuthErrorMessages, Messages, Numbers } from "./../common/constants";
 import {
   checkPublicKey,
+  generateToken,
   getRandomNonce,
   recoverPublicAddressfromSignature,
   resultHandler,
-} from './../common/helpers';
-import { GetLoginDto } from './dtos/get-login.dto';
-import { GetNonceDto } from './dtos/get-nonce.dto';
+} from "./../common/helpers";
+import { GetLoginDto } from "./dtos/get-login.dto";
+import { GetNonceDto } from "./dtos/get-nonce.dto";
+import { JwtUserDto } from "./dtos";
+import { MailService } from "src/mail/mail.service";
+import { type } from "os";
 
 @Injectable()
 export class AuthService {
   constructor(
     private configService: ConfigService,
     private userService: UserService,
-    private jwtService: JwtService
+    private jwtService: JwtService,
+    private mailService: MailService
   ) {}
 
   async getNonce(wallet: string): Promise<Result<GetNonceDto>> {
@@ -40,7 +45,7 @@ export class AuthService {
     const nonce = getRandomNonce();
 
     if (user.statusCode == 200) {
-      return resultHandler(200, 'nonce generated', {
+      return resultHandler(200, "nonce generated", {
         message: Messages.SIGN_MESSAGE + user.data.nonce.toString(),
         userId: user.data._id,
       });
@@ -49,10 +54,9 @@ export class AuthService {
     const result = await this.userService.create({
       nonce,
       walletAddress: userWallet,
-      plantingNonce: 1,
     });
 
-    return resultHandler(200, 'nonce generated', {
+    return resultHandler(200, "nonce generated", {
       message: Messages.SIGN_MESSAGE + result.data.nonce.toString(),
       userId: result.data._id,
     });
@@ -75,7 +79,7 @@ export class AuthService {
 
     const message = Messages.SIGN_MESSAGE + user.data.nonce.toString();
 
-    const msg = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
+    const msg = `0x${Buffer.from(message, "utf8").toString("hex")}`;
     const recoveredAddress: string = recoverPublicAddressfromSignature(
       signature,
       msg
@@ -88,12 +92,59 @@ export class AuthService {
 
     await this.userService.updateUserById(user.data._id, { nonce });
 
-    return resultHandler(200, 'successful login', {
+    return resultHandler(200, "successful login", {
       access_token: await this.getAccessToken(user.data._id, userWallet),
     });
   }
-  async verifyEmailRequest(email: string) {}
-  async verifyEmail() {}
+  async verifyEmailRequest(user: JwtUserDto, email: string) {
+    let userWithVerifiedEmailResult = await this.userService.findUser({
+      email,
+      emailVerified: true,
+    });
+    console.log("userWithVerifiedEmailResult", userWithVerifiedEmailResult);
+
+    if (userWithVerifiedEmailResult.statusCode != 404) {
+      throw new ForbiddenException("email in use");
+    }
+
+    const verificationCode = generateToken(100000, 999999);
+    console.log("verificationCode", verificationCode);
+
+    await this.mailService.sendEmail(email, verificationCode);
+
+    await this.userService.updateUserById(user.userId, {
+      emailCode: verificationCode,
+      emailCodeIssuedAt: new Date(),
+    });
+  }
+  async verifyEmail(user: JwtUserDto, code: string) {
+    const userData = await this.userService.findUserById(user.userId);
+    let userWithVerifiedEmailResult = await this.userService.findUser({
+      email: userData.data.email,
+      emailVerified: true,
+    });
+
+    if (userWithVerifiedEmailResult.statusCode != 404) {
+      throw new ForbiddenException("email already verified");
+    }
+    const now = Date.now();
+
+    if (
+      userData.data.emailCodeIssuedAt.getTime() +
+        Numbers.EMAIL_TOKEN_VALID_TIME <
+      now
+    ) {
+      throw new ForbiddenException("token expired");
+    }
+
+    if (userData.data.emailCode !== code) {
+      throw new ForbiddenException("invalid token");
+    }
+
+    await this.userService.updateUserById(user.userId, { emailVerified: true });
+    return resultHandler(200, "verified", "");
+  }
+
   private async getAccessToken(
     userId: string,
     walletAddress: string
@@ -102,7 +153,7 @@ export class AuthService {
     try {
       return this.jwtService.signAsync(payload, {
         expiresIn: 60 * 60 * 24 * 30,
-        secret: this.configService.get<string>('JWT_SECRET'),
+        secret: this.configService.get<string>("JWT_SECRET"),
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);

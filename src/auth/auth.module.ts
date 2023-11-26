@@ -10,6 +10,7 @@ import { UserMobileRepository } from "./auth.repository";
 import { UserMobile, UserMobileSchema } from "./schemas";
 import { MongooseModule } from "@nestjs/mongoose";
 import { DatabaseModule } from "./../database/database.module";
+import { MailModule } from "src/mail/mail.module";
 @Module({
   imports: [
     UserModule,
@@ -18,6 +19,7 @@ import { DatabaseModule } from "./../database/database.module";
       { name: UserMobile.name, schema: UserMobileSchema },
     ]),
     DatabaseModule,
+    MailModule,
   ],
   controllers: [AuthController],
   providers: [

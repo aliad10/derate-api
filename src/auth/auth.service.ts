@@ -4,24 +4,22 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 
-import { ConfigService } from "@nestjs/config";
-import { UserService } from "./../user/user.service";
-import { JwtService } from "@nestjs/jwt";
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from './../user/user.service';
 
-import { AuthErrorMessages, Messages } from "./../common/constants";
+import { Result } from 'src/database/interfaces/result.interface';
+import { AuthErrorMessages, Messages } from './../common/constants';
 import {
-  getRandomNonce,
   checkPublicKey,
+  getRandomNonce,
   recoverPublicAddressfromSignature,
-  responseHandler,
   resultHandler,
-} from "./../common/helpers";
-import { LoginResultDto, NonceResultDto } from "./dtos";
-import { Result } from "src/database/interfaces/result.interface";
-import { GetNonceDto } from "./dtos/get-nonce.dto";
-import { GetLoginDto } from "./dtos/get-login.dto";
+} from './../common/helpers';
+import { GetLoginDto } from './dtos/get-login.dto';
+import { GetNonceDto } from './dtos/get-nonce.dto';
 
 @Injectable()
 export class AuthService {
@@ -42,7 +40,7 @@ export class AuthService {
     const nonce = getRandomNonce();
 
     if (user.statusCode == 200) {
-      return resultHandler(200, "nonce generated", {
+      return resultHandler(200, 'nonce generated', {
         message: Messages.SIGN_MESSAGE + user.data.nonce.toString(),
         userId: user.data._id,
       });
@@ -54,7 +52,7 @@ export class AuthService {
       plantingNonce: 1,
     });
 
-    return resultHandler(200, "nonce generated", {
+    return resultHandler(200, 'nonce generated', {
       message: Messages.SIGN_MESSAGE + result.data.nonce.toString(),
       userId: result.data._id,
     });
@@ -77,7 +75,7 @@ export class AuthService {
 
     const message = Messages.SIGN_MESSAGE + user.data.nonce.toString();
 
-    const msg = `0x${Buffer.from(message, "utf8").toString("hex")}`;
+    const msg = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
     const recoveredAddress: string = recoverPublicAddressfromSignature(
       signature,
       msg
@@ -90,11 +88,12 @@ export class AuthService {
 
     await this.userService.updateUserById(user.data._id, { nonce });
 
-    return resultHandler(200, "successful login", {
+    return resultHandler(200, 'successful login', {
       access_token: await this.getAccessToken(user.data._id, userWallet),
     });
   }
-
+  async verifyEmailRequest(email: string) {}
+  async verifyEmail() {}
   private async getAccessToken(
     userId: string,
     walletAddress: string
@@ -103,7 +102,7 @@ export class AuthService {
     try {
       return this.jwtService.signAsync(payload, {
         expiresIn: 60 * 60 * 24 * 30,
-        secret: this.configService.get<string>("JWT_SECRET"),
+        secret: this.configService.get<string>('JWT_SECRET'),
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);

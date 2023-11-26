@@ -1,22 +1,27 @@
 import { Module } from '@nestjs/common';
+import { ConfigModule, ConfigService } from '@nestjs/config';
+import { SessionModule } from 'nestjs-session';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
-import { ConfigModule } from '@nestjs/config';
 import { TwitterModule } from './twitter/twitter.module';
-import { SessionModule } from 'nestjs-session';
 
 @Module({
   imports: [
     MailModule,
     TwitterModule,
+    AuthModule,
     ConfigModule.forRoot({ isGlobal: true }),
-    SessionModule.forRoot({
-      session: {
-        secret: "",
-        resave: true,
-        saveUninitialized: true,
-      },
+    SessionModule.forRootAsync({
+      useFactory: (configService: ConfigService) => ({
+        session: {
+          secret: configService.get<string>('SESSION_SECRET'),
+          resave: true,
+          saveUninitialized: true,
+        },
+      }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [AppController],

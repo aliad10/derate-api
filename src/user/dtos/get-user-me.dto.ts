@@ -1,6 +1,5 @@
-import { ApiResponseProperty } from "@nestjs/swagger";
-import { IsDate, IsNumber, IsString } from "class-validator";
-import BigNumber from 'bignumber.js';
+import { ApiResponseProperty } from '@nestjs/swagger';
+import { IsDate, IsString } from 'class-validator';
 
 export class GetUserMeDto {
   @IsString()
@@ -10,10 +9,6 @@ export class GetUserMeDto {
   @IsString()
   @ApiResponseProperty()
   walletAddress: string;
-
-  @IsNumber()
-  @ApiResponseProperty()
-  totalBalance: BigNumber;
 
   @IsDate()
   @ApiResponseProperty()

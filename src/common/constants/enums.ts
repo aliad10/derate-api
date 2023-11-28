@@ -8,3 +8,15 @@ export enum UserStatus {
   PENDING = 2,
   VERIFIED = 3,
 }
+
+export enum PlatformStatus {
+  PENDING,
+  ACCEPTED,
+  REJECTED,
+}
+
+export enum SignerRecoverySelector {
+  SERVICE,
+  FEEDBACK,
+  FEEDBACK_ON_FEEDBACK,
+}

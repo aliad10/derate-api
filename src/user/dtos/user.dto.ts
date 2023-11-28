@@ -44,4 +44,16 @@ export class UserDto {
   @IsOptional()
   @IsBoolean()
   emailCodeIssuedAt?;
+
+  @IsOptional()
+  @IsNumber()
+  serviceNonce?;
+
+  @IsOptional()
+  @IsNumber()
+  feedbackNonce?;
+
+  @IsOptional()
+  @IsNumber()
+  feedbackAboutFeedBackNonce?;
 }

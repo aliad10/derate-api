@@ -73,6 +73,29 @@ export class Web3Service {
     }
   }
 
+  async getServiceData(serviceAddress: string) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
+      );
+
+      const contractABI = Contract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      const service = await contract.services(serviceAddress).call();
+      return service;
+    } catch (error) {
+      console.log('getPlanterData func : ', error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   getWeb3Instance() {
     return this.web3Instance;
   }

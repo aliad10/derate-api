@@ -5,6 +5,7 @@ import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { MailModule } from './mail/mail.module';
+import { PlatformModule } from './platform/platform.module';
 import { TwitterModule } from './twitter/twitter.module';
 
 @Module({
@@ -12,6 +13,7 @@ import { TwitterModule } from './twitter/twitter.module';
     MailModule,
     TwitterModule,
     AuthModule,
+    PlatformModule,
     ConfigModule.forRoot({ isGlobal: true }),
     SessionModule.forRootAsync({
       useFactory: (configService: ConfigService) => ({

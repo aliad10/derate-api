@@ -4,7 +4,7 @@ import { ethers, Wallet } from 'ethers';
 import { resultHandler } from 'src/common/helpers';
 
 const Web3 = require('web3');
-const Contract = require('./../../abi/Contract.json');
+const Contract = require('./../../abi/DeRate.json');
 
 @Injectable()
 export class Web3Service {

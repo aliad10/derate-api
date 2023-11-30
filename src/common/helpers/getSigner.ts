@@ -23,7 +23,8 @@ export function getSigner(
     primaryType = 'plantAssignTree';
     primaryTypeObj = [
       { name: 'nonce', type: 'uint256' },
-      { name: 'infoHash', type: 'uint256' },
+      { name: 'infoHash', type: 'string' },
+      { name: 'serviceAddress', type: 'string' },
     ];
   } else if (selector == SignerRecoverySelector.FEEDBACK) {
     primaryType = 'plantTree';

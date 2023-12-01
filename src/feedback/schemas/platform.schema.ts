@@ -1,11 +1,11 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
-import { PlatformStatus } from 'src/common/constants';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from "mongoose";
+import { PlatformStatus } from "src/common/constants";
 
-export type PlatformDocument = Platform & Document;
+export type FeedbackDocument = Feedback & Document;
 
 @Schema()
-export class Platform extends Document {
+export class Feedback extends Document {
   @Prop({ type: String, required: true })
   signer;
 

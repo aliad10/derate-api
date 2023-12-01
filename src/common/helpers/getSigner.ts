@@ -1,14 +1,14 @@
-var sigUtil = require('eth-sig-util');
+var sigUtil = require("eth-sig-util");
 
 import {
   BadRequestException,
   InternalServerErrorException,
-} from '@nestjs/common';
-import { SignerRecoverySelector } from '../constants';
-import { getCheckedSumAddress } from './getCheckedSumAddress';
+} from "@nestjs/common";
+import { SignerRecoverySelector } from "../constants";
+import { getCheckedSumAddress } from "./getCheckedSumAddress";
 
 enum getSignerEnum {
-  INVALID_SIGNATURE = 'Invalid signature length',
+  INVALID_SIGNATURE = "Invalid signature length",
 }
 
 export function getSigner(
@@ -20,36 +20,36 @@ export function getSigner(
   let primaryType;
 
   if (selector == SignerRecoverySelector.SERVICE) {
-    primaryType = 'plantAssignTree';
+    primaryType = "addService";
     primaryTypeObj = [
-      { name: 'nonce', type: 'uint256' },
-      { name: 'infoHash', type: 'string' },
-      { name: 'serviceAddress', type: 'string' },
+      { name: "nonce", type: "uint256" },
+      { name: "infoHash", type: "string" },
+      { name: "serviceAddress", type: "string" },
     ];
   } else if (selector == SignerRecoverySelector.FEEDBACK) {
-    primaryType = 'plantTree';
+    primaryType = "feedbackToService";
     primaryTypeObj = [
-      { name: 'nonce', type: 'uint256' },
-      { name: 'infoHash', type: 'string' },
-      { name: 'birthDate', type: 'uint64' },
-      { name: 'countryCode', type: 'uint16' },
+      { name: "nonce", type: "uint256" },
+      { name: "infoHash", type: "string" },
+      { name: "serviceAddress", type: "string" },
     ];
   } else if (selector == SignerRecoverySelector.FEEDBACK_ON_FEEDBACK) {
-    primaryType = 'updateTree';
+    primaryType = "feedbackToFeedback";
     primaryTypeObj = [
-      { name: 'nonce', type: 'uint256' },
-      { name: 'treeId', type: 'uint256' },
-      { name: 'treeSpecs', type: 'string' },
+      { name: "nonce", type: "uint256" },
+      { name: "infoHash", type: "string" },
+      { name: "prevSubmiter", type: "string" },
+      { name: "serviceAddress", type: "string" },
     ];
   }
 
   const msgParams = JSON.stringify({
     types: {
       EIP712Domain: [
-        { name: 'name', type: 'string' },
-        { name: 'version', type: 'string' },
-        { name: 'chainId', type: 'uint256' },
-        { name: 'verifyingContract', type: 'address' },
+        { name: "name", type: "string" },
+        { name: "version", type: "string" },
+        { name: "chainId", type: "uint256" },
+        { name: "verifyingContract", type: "address" },
       ],
       [primaryType]: primaryTypeObj,
     },
@@ -75,7 +75,7 @@ export function getSigner(
       throw new BadRequestException(getSignerEnum.INVALID_SIGNATURE);
     }
 
-    console.log('getSigner func : ', error);
+    console.log("getSigner func : ", error);
 
     throw new InternalServerErrorException(error.message);
   }

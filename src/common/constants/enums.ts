@@ -15,6 +15,17 @@ export enum PlatformStatus {
   REJECTED,
 }
 
+export enum FeedbackStatus {
+  PENDING,
+  ACCEPTED,
+  REJECTED,
+}
+export enum FeedbackOnFeedbackStatus {
+  PENDING,
+  ACCEPTED,
+  REJECTED,
+}
+
 export enum SignerRecoverySelector {
   SERVICE,
   FEEDBACK,

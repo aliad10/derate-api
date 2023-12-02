@@ -29,7 +29,7 @@ export class PlatformService {
     user: JwtUserDto
   ): Promise<Platform> {
     let userData = await this.userService.findUserById(user.userId, {
-      plantingNonce: 1,
+      serviceNonce: 1,
       _id: 0,
     });
 

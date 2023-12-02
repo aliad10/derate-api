@@ -1,1 +1,1 @@
-export * from './platform.schema';
+export * from './feedback.schema';

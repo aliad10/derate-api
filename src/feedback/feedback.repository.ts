@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { EntityRepository } from '../database/database.repository';
-import { Platform, PlatformDocument } from './schemas';
+import { Feedback, FeedbackDocument } from './schemas';
 @Injectable()
-export class PlatformRepository extends EntityRepository<PlatformDocument> {
+export class FeedbackRepository extends EntityRepository<FeedbackDocument> {
   constructor(
-    @InjectModel(Platform.name)
-    platformModel: Model<PlatformDocument>
+    @InjectModel(Feedback.name)
+    feedbackModel: Model<FeedbackDocument>
   ) {
-    super(platformModel);
+    super(feedbackModel);
   }
 }

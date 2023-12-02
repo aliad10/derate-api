@@ -1,6 +1,6 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
-import { PlatformStatus } from "src/common/constants";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+import { FeedbackStatus } from 'src/common/constants';
 
 export type FeedbackDocument = Feedback & Document;
 
@@ -21,7 +21,7 @@ export class Feedback extends Document {
   @Prop({ type: String, required: true })
   signature;
 
-  @Prop({ type: Number, required: true, default: PlatformStatus.PENDING })
+  @Prop({ type: Number, required: true, default: FeedbackStatus.PENDING })
   status;
 
   @Prop({ type: Date, required: true, default: Date.now })
@@ -31,4 +31,4 @@ export class Feedback extends Document {
   updatedAt;
 }
 
-export const PlatformSchema = SchemaFactory.createForClass(Platform);
+export const FeedbackSchema = SchemaFactory.createForClass(Feedback);

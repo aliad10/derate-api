@@ -4,7 +4,9 @@ import { ethers, Wallet } from 'ethers';
 import { resultHandler } from 'src/common/helpers';
 
 const Web3 = require('web3');
-const Contract = require('./../../abi/DeRate.json');
+const DerateContract = require('./../../abi/DeRate.json');
+
+const AccessRestrictionContract = require('./../../abi/AccessRestriction.json');
 
 @Injectable()
 export class Web3Service {
@@ -48,7 +50,7 @@ export class Web3Service {
         'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
       );
 
-      const contractABI = Contract.abi;
+      const contractABI = AccessRestrictionContract.abi;
 
       const contract = new ethers.Contract(
         contractAddress,
@@ -79,7 +81,7 @@ export class Web3Service {
         'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
       );
 
-      const contractABI = Contract.abi;
+      const contractABI = DerateContract.abi;
 
       const contract = new ethers.Contract(
         contractAddress,
@@ -89,6 +91,59 @@ export class Web3Service {
 
       const service = await contract.services(serviceAddress).call();
       return service;
+    } catch (error) {
+      console.log('getService func : ', error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async getFeedbackData(submitter: string, serviceAddress: string) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      const feedback = await contract
+        .serviceFeedbacks(submitter, serviceAddress)
+        .call();
+      return feedback;
+    } catch (error) {
+      console.log('getFeedbackData func : ', error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+  async getFeedbackOnFeedbackData(
+    submitter: string,
+    prevSubmitter: string,
+    serviceAddress: string
+  ) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      const feedback = await contract
+        .feedbackFeedbacks(submitter, prevSubmitter, serviceAddress)
+        .call();
+      return feedback;
     } catch (error) {
       console.log('getPlanterData func : ', error);
 

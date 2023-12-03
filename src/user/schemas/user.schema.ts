@@ -32,7 +32,7 @@ export class User extends Document {
   @Prop({ type: Number, default: 0, required: true })
   feedbackNonce;
   @Prop({ type: Number, default: 0, required: true })
-  feedbackAboutFeedBackNonce;
+  feedbackOnFeedBackNonce;
 
   @Prop({ type: Date, default: () => new Date(), required: true })
   createdAt;

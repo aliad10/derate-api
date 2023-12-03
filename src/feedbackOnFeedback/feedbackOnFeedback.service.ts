@@ -5,25 +5,25 @@ import { JwtUserDto } from '../auth/dtos';
 import { SignerRecoverySelector } from '../common/constants';
 import { getSigner, resultHandler } from '../common/helpers';
 import { UserService } from '../user/user.service';
+import { FeedbackOnFeedbackRequestDto } from './dto';
 
-import { PlatformRequestDto } from './dto/platform-request.dto';
-import { FeedbackRepository } from './feedback.repository';
-import { Feedback } from './schemas';
+import { FeedbackOnFeedbackRepository } from './feedbackOnFeedback.repository';
+import { FeedbackOnFeedback } from './schemas';
 
 @Injectable()
-export class FeedbackService {
+export class FeedbackOnFeedbackService {
   constructor(
-    private feedbackRepository: FeedbackRepository,
+    private feedbackOnFeedbackRepository: FeedbackOnFeedbackRepository,
     private userService: UserService,
     private web3Service: Web3Service
   ) {}
 
-  async submitFeedbackRequest(
-    dto: PlatformRequestDto,
+  async submitFeedbackOnFeedbackRequest(
+    dto: FeedbackOnFeedbackRequestDto,
     user: JwtUserDto
-  ): Promise<Feedback> {
+  ): Promise<FeedbackOnFeedback> {
     let userData = await this.userService.findUserById(user.userId, {
-      feedbackNonce: 1,
+      feedbackOnFeedBackNonce: 1,
       _id: 0,
     });
 
@@ -32,47 +32,53 @@ export class FeedbackService {
       {
         nonce: userData.data.feedbackNonce,
         infoHash: dto.infoHash,
+        prevSubmitter: dto.prevSubmitter,
         serviceAddress: dto.serviceAddress,
       },
-      SignerRecoverySelector.FEEDBACK
+      SignerRecoverySelector.FEEDBACK_ON_FEEDBACK
     );
 
     if (signer !== user.walletAddress)
       throw new ForbiddenException('invalid signer');
 
-    const feedbackData = await this.web3Service.getFeedbackData(
+    const feedbackData = await this.web3Service.getFeedbackOnFeedbackData(
       signer,
+      dto.prevSubmitter,
       dto.serviceAddress
     );
 
     if (feedbackData.exists)
       throw new ForbiddenException('feedback already submitted');
 
-    const createdData = await this.feedbackRepository.create({
+    const createdData = await this.feedbackOnFeedbackRepository.create({
       ...dto,
       signer,
-      nonce: userData.data.feedbackNonce,
+      nonce: userData.data.feedbackOnFeedBackNonce,
     });
 
     await this.userService.updateUserById(user.userId, {
-      feedbackNonce: userData.data.feedbackNonce + 1,
+      feedbackOnFeedBackNonce: userData.data.feedbackOnFeedBackNonce + 1,
     });
 
     return createdData;
   }
 
   async updateStatus(signer: string, nonce: number, status) {
-    const result = await this.feedbackRepository.findOneAndUpdate(
+    const result = await this.feedbackOnFeedbackRepository.findOneAndUpdate(
       { signer, nonce },
       { $set: { status } }
     );
     return resultHandler(200, 'status updated', result);
   }
-  async getFeedbackSubmissionRequests(
+  async getFeedbackOnFeedbackSubmissionRequests(
     filter,
     sortOption,
     projection?
-  ): Promise<Feedback[]> {
-    return await this.feedbackRepository.sort(filter, sortOption, projection);
+  ): Promise<FeedbackOnFeedback[]> {
+    return await this.feedbackOnFeedbackRepository.sort(
+      filter,
+      sortOption,
+      projection
+    );
   }
 }

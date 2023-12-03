@@ -4,26 +4,26 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 
-import { ConfigService } from "@nestjs/config";
-import { JwtService } from "@nestjs/jwt";
-import { UserService } from "./../user/user.service";
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { UserService } from './../user/user.service';
 
-import { Result } from "src/database/interfaces/result.interface";
-import { MailService } from "src/mail/mail.service";
-import { Web3Service } from "src/web3/web3.service";
-import { AuthErrorMessages, Messages, Numbers } from "./../common/constants";
+import { Result } from 'src/database/interfaces/result.interface';
+import { MailService } from 'src/mail/mail.service';
+import { Web3Service } from 'src/web3/web3.service';
+import { AuthErrorMessages, Messages, Numbers } from './../common/constants';
 import {
   checkPublicKey,
   generateToken,
   getRandomNonce,
   recoverPublicAddressfromSignature,
   resultHandler,
-} from "./../common/helpers";
-import { JwtUserDto } from "./dtos";
-import { GetLoginDto } from "./dtos/get-login.dto";
-import { GetNonceDto } from "./dtos/get-nonce.dto";
+} from './../common/helpers';
+import { JwtUserDto } from './dtos';
+import { GetLoginDto } from './dtos/get-login.dto';
+import { GetNonceDto } from './dtos/get-nonce.dto';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +46,7 @@ export class AuthService {
     const nonce = getRandomNonce();
 
     if (user.statusCode == 200) {
-      return resultHandler(200, "nonce generated", {
+      return resultHandler(200, 'nonce generated', {
         message: Messages.SIGN_MESSAGE + user.data.nonce.toString(),
         userId: user.data._id,
       });
@@ -57,7 +57,7 @@ export class AuthService {
       walletAddress: userWallet,
     });
 
-    return resultHandler(200, "nonce generated", {
+    return resultHandler(200, 'nonce generated', {
       message: Messages.SIGN_MESSAGE + result.data.nonce.toString(),
       userId: result.data._id,
     });
@@ -80,7 +80,7 @@ export class AuthService {
 
     const message = Messages.SIGN_MESSAGE + user.data.nonce.toString();
 
-    const msg = `0x${Buffer.from(message, "utf8").toString("hex")}`;
+    const msg = `0x${Buffer.from(message, 'utf8').toString('hex')}`;
     const recoveredAddress: string = recoverPublicAddressfromSignature(
       signature,
       msg
@@ -93,7 +93,7 @@ export class AuthService {
 
     await this.userService.updateUserById(user.data._id, { nonce });
 
-    return resultHandler(200, "successful login", {
+    return resultHandler(200, 'successful login', {
       access_token: await this.getAccessToken(user.data._id, userWallet),
     });
   }
@@ -102,14 +102,14 @@ export class AuthService {
       email,
       emailVerified: true,
     });
-    console.log("userWithVerifiedEmailResult", userWithVerifiedEmailResult);
+    console.log('userWithVerifiedEmailResult', userWithVerifiedEmailResult);
 
     if (userWithVerifiedEmailResult.statusCode != 404) {
-      throw new ForbiddenException("email in use");
+      throw new ForbiddenException('email in use');
     }
 
     const verificationCode = generateToken(100000, 999999);
-    console.log("verificationCode", verificationCode);
+    console.log('verificationCode', verificationCode);
 
     await this.mailService.sendEmail(email, verificationCode);
 
@@ -126,7 +126,7 @@ export class AuthService {
     });
 
     if (userWithVerifiedEmailResult.statusCode != 404) {
-      throw new ForbiddenException("email already verified");
+      throw new ForbiddenException('email already verified');
     }
     const now = Date.now();
 
@@ -135,15 +135,15 @@ export class AuthService {
         Numbers.EMAIL_TOKEN_VALID_TIME <
       now
     ) {
-      throw new ForbiddenException("token expired");
+      throw new ForbiddenException('token expired');
     }
 
     if (userData.data.emailCode !== code) {
-      throw new ForbiddenException("invalid token");
+      throw new ForbiddenException('invalid token');
     }
 
     await this.userService.updateUserById(user.userId, { emailVerified: true });
-    return resultHandler(200, "verified", "");
+    return resultHandler(200, 'verified', '');
   }
 
   async connectTwitter(user: JwtUserDto, twitter: string) {
@@ -152,7 +152,7 @@ export class AuthService {
     });
 
     if (userWithTwitterAccount.statusCode != 404) {
-      throw new ForbiddenException("twitter already connected");
+      throw new ForbiddenException('twitter already connected');
     }
 
     await this.userService.updateUserById(user.userId, { twitter });
@@ -161,9 +161,9 @@ export class AuthService {
   async getUserRole(user: JwtUserDto) {
     const userData = await this.userService.findUserById(user.userId);
     if (!userData.data.emailVerified || !userData.data.twitter) {
-      throw new ForbiddenException("incomplete verification");
+      throw new ForbiddenException('incomplete verification');
     }
-    await this.web3Service.grantUserRole(userData.data.walletAddress);
+    return await this.web3Service.grantUserRole(userData.data.walletAddress);
   }
 
   private async getAccessToken(
@@ -174,7 +174,7 @@ export class AuthService {
     try {
       return this.jwtService.signAsync(payload, {
         expiresIn: 60 * 60 * 24 * 30,
-        secret: this.configService.get<string>("JWT_SECRET"),
+        secret: this.configService.get<string>('JWT_SECRET'),
       });
     } catch (error) {
       throw new InternalServerErrorException(error.message);

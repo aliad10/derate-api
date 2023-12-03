@@ -38,7 +38,7 @@ export function getSigner(
     primaryTypeObj = [
       { name: 'nonce', type: 'uint256' },
       { name: 'infoHash', type: 'string' },
-      { name: 'prevSubmiter', type: 'string' },
+      { name: 'prevSubmitter', type: 'string' },
       { name: 'serviceAddress', type: 'string' },
     ];
   }

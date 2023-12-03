@@ -1,7 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString } from 'class-validator';
 
-export class PlatformRequestDto {
+export class FeedbackOnFeedbackRequestDto {
   @ApiProperty()
   @IsString()
   infoHash: string;
@@ -10,6 +10,9 @@ export class PlatformRequestDto {
   @IsString()
   serviceAddress: string;
 
+  @ApiProperty()
+  @IsString()
+  prevSubmitter: string;
   @ApiProperty()
   @IsString()
   signature: string;

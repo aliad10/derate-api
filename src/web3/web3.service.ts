@@ -58,8 +58,6 @@ export class Web3Service {
         this.signer
       );
 
-      let gasPrice = await this.provider.getGasPrice();
-
       let transaction = await contract.giveUserRole(to, {
         gasLimit: 2e6,
       });
@@ -67,6 +65,7 @@ export class Web3Service {
       let transactionResponse = await transaction.wait();
 
       const transactionHash = transactionResponse.transactionHash;
+      console.log('transactionHash', transactionHash);
 
       return resultHandler(200, 'withdraw distributed', transactionHash);
     } catch (error) {
@@ -78,7 +77,7 @@ export class Web3Service {
   async getServiceData(serviceAddress: string) {
     try {
       const contractAddress = this.configService.get<string>(
-        'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
+        'DERATE_CONTRACT_ADDRESS'
       );
 
       const contractABI = DerateContract.abi;
@@ -101,7 +100,7 @@ export class Web3Service {
   async getFeedbackData(submitter: string, serviceAddress: string) {
     try {
       const contractAddress = this.configService.get<string>(
-        'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
+        'DERATE_CONTRACT_ADDRESS'
       );
 
       const contractABI = DerateContract.abi;
@@ -129,7 +128,7 @@ export class Web3Service {
   ) {
     try {
       const contractAddress = this.configService.get<string>(
-        'ACCESS_RESTRICTION_CONTRACT_ADDRESS'
+        'DERATE_CONTRACT_ADDRESS'
       );
 
       const contractABI = DerateContract.abi;
@@ -151,6 +150,150 @@ export class Web3Service {
     }
   }
 
+  async executeAddService(
+    nonce: number,
+    submitter: string,
+    service: string,
+    infoHash: string,
+    v: string,
+    r: string,
+    s: string
+  ) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        'DERATE_CONTRACT_ADDRESS'
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      let transaction = await contract.addService(
+        nonce,
+        submitter,
+        service,
+        infoHash,
+        v,
+        r,
+        s,
+        {
+          gasLimit: 2e6,
+        }
+      );
+
+      let transactionResponse = await transaction.wait();
+      console.log('transactionResponse', transactionResponse);
+
+      const transactionHash = transactionResponse.transactionHash;
+
+      return resultHandler(200, 'service added', transactionHash);
+    } catch (error) {
+      console.log('add service func : ', error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async executeAddFeedback(
+    nonce: number,
+    submitter: string,
+    service: string,
+    infoHash: string,
+    v: string,
+    r: string,
+    s: string
+  ) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        'DERATE_CONTRACT_ADDRESS'
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      let transaction = await contract.submitFeedbackToService(
+        nonce,
+        submitter,
+        service,
+        infoHash,
+        v,
+        r,
+        s,
+        {
+          gasLimit: 2e6,
+        }
+      );
+
+      let transactionResponse = await transaction.wait();
+      console.log('transactionResponse', transactionResponse);
+
+      const transactionHash = transactionResponse.transactionHash;
+
+      return resultHandler(200, 'feedback to service added', transactionHash);
+    } catch (error) {
+      console.log('add service func : ', error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+  async executeAddFeedbackOnFeedback(
+    nonce: number,
+    prevSubmitter: string,
+    submitter: string,
+    service: string,
+    infoHash: string,
+    v: string,
+    r: string,
+    s: string
+  ) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        'DERATE_CONTRACT_ADDRESS'
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      let transaction = await contract.submitFeedbackToFeedback(
+        nonce,
+        prevSubmitter,
+        submitter,
+        service,
+        infoHash,
+        v,
+        r,
+        s,
+        {
+          gasLimit: 2e6,
+        }
+      );
+
+      let transactionResponse = await transaction.wait();
+      console.log('transactionResponse', transactionResponse);
+
+      const transactionHash = transactionResponse.transactionHash;
+
+      return resultHandler(200, 'feedback on feedback added', transactionHash);
+    } catch (error) {
+      console.log('add service func : ', error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
   getWeb3Instance() {
     return this.web3Instance;
   }

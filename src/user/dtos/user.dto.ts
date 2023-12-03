@@ -55,5 +55,5 @@ export class UserDto {
 
   @IsOptional()
   @IsNumber()
-  feedbackAboutFeedBackNonce?;
+  feedbackOnFeedBackNonce?;
 }

@@ -46,6 +46,15 @@ export class PlatformService {
     if (signer !== user.walletAddress)
       throw new ForbiddenException('invalid signer');
 
+    let serviceRequest = await this.platformRepository.findOne({
+      serviceAddress: dto.serviceAddress,
+      status: { $in: [PlatformStatus.PENDING, PlatformStatus.ACCEPTED] },
+    });
+
+    if (serviceRequest) {
+      throw new ForbiddenException('service request exists');
+    }
+
     const serviceData = await this.web3Service.getServiceData(
       dto.serviceAddress
     );
@@ -55,7 +64,7 @@ export class PlatformService {
 
     const createdData = await this.platformRepository.create({
       ...dto,
-      signer,
+      signer: user.walletAddress,
       nonce: userData.data.serviceNonce,
     });
 
@@ -91,6 +100,32 @@ export class PlatformService {
     );
     return resultHandler(200, 'status updated', result);
   }
+
+  async executeRequests(
+    nonce: number,
+    submitter: string,
+    service: string,
+    infoHash: string,
+    signature: string
+  ) {
+    console.log('sssss', signature);
+
+    const r = '0x' + signature.substring(0, 64);
+    const s = '0x' + signature.substring(64, 128);
+    const v = parseInt(signature.substring(128, 130), 16);
+    console.log('cxcxcxcx');
+
+    await this.web3Service.executeAddService(
+      nonce,
+      submitter,
+      service,
+      infoHash,
+      v,
+      r,
+      s
+    );
+  }
+
   async getPlatformSubmissionRequests(
     filter,
     sortOption,

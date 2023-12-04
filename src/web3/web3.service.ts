@@ -88,7 +88,7 @@ export class Web3Service {
         this.signer
       );
 
-      const service = await contract.services(serviceAddress).call();
+      const service = await contract.services(serviceAddress);
       return service;
     } catch (error) {
       console.log('getService func : ', error);
@@ -155,7 +155,7 @@ export class Web3Service {
     submitter: string,
     service: string,
     infoHash: string,
-    v: string,
+    v: number,
     r: string,
     s: string
   ) {
@@ -171,6 +171,14 @@ export class Web3Service {
         contractABI,
         this.signer
       );
+
+      console.log(`nonce ${nonce},
+      submitter ${submitter},
+      service ${service},
+      infoHash ${infoHash},
+      v ${v},
+      r ${r},
+      s ${s}`);
 
       let transaction = await contract.addService(
         nonce,

@@ -68,6 +68,29 @@ export class FeedbackService {
     );
     return resultHandler(200, 'status updated', result);
   }
+
+  async executeRequests(
+    nonce: number,
+    submitter: string,
+    service: string,
+    infoHash: string,
+    signature: string
+  ) {
+    const r = '0x' + signature.substring(0, 64);
+    const s = '0x' + signature.substring(64, 128);
+    const v = parseInt(signature.substring(128, 130), 16);
+
+    await this.web3Service.executeAddFeedback(
+      nonce,
+      submitter,
+      service,
+      infoHash,
+      v,
+      r,
+      s
+    );
+  }
+
   async getFeedbackSubmissionRequests(
     filter,
     sortOption,

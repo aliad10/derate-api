@@ -24,22 +24,22 @@ export function getSigner(
     primaryTypeObj = [
       { name: 'nonce', type: 'uint256' },
       { name: 'infoHash', type: 'string' },
-      { name: 'serviceAddress', type: 'string' },
+      { name: 'serviceAddress', type: 'address' },
     ];
   } else if (selector == SignerRecoverySelector.FEEDBACK) {
     primaryType = 'feedbackToService';
     primaryTypeObj = [
       { name: 'nonce', type: 'uint256' },
       { name: 'infoHash', type: 'string' },
-      { name: 'serviceAddress', type: 'string' },
+      { name: 'serviceAddress', type: 'address' },
     ];
   } else if (selector == SignerRecoverySelector.FEEDBACK_ON_FEEDBACK) {
     primaryType = 'feedbackToFeedback';
     primaryTypeObj = [
       { name: 'nonce', type: 'uint256' },
       { name: 'infoHash', type: 'string' },
-      { name: 'prevSubmitter', type: 'string' },
-      { name: 'serviceAddress', type: 'string' },
+      { name: 'prevSubmitter', type: 'address' },
+      { name: 'serviceAddress', type: 'address' },
     ];
   }
 

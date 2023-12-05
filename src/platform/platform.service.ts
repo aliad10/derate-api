@@ -43,7 +43,7 @@ export class PlatformService {
       SignerRecoverySelector.SERVICE
     );
 
-    if (signer !== user.walletAddress)
+    if (signer.toLowerCase() !== user.walletAddress.toLowerCase())
       throw new ForbiddenException('invalid signer');
 
     let serviceRequest = await this.platformRepository.findOne({
@@ -108,12 +108,9 @@ export class PlatformService {
     infoHash: string,
     signature: string
   ) {
-    console.log('sssss', signature);
-
     const r = '0x' + signature.substring(0, 64);
     const s = '0x' + signature.substring(64, 128);
     const v = parseInt(signature.substring(128, 130), 16);
-    console.log('cxcxcxcx');
 
     await this.web3Service.executeAddService(
       nonce,

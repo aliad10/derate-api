@@ -172,14 +172,6 @@ export class Web3Service {
         this.signer
       );
 
-      console.log(`nonce ${nonce},
-      submitter ${submitter},
-      service ${service},
-      infoHash ${infoHash},
-      v ${v},
-      r ${r},
-      s ${s}`);
-
       let transaction = await contract.addService(
         nonce,
         submitter,
@@ -189,7 +181,7 @@ export class Web3Service {
         r,
         s,
         {
-          gasLimit: 2e6,
+          gasLimit: 2e7,
         }
       );
 
@@ -211,7 +203,7 @@ export class Web3Service {
     submitter: string,
     service: string,
     infoHash: string,
-    v: string,
+    v: number,
     r: string,
     s: string
   ) {
@@ -259,7 +251,7 @@ export class Web3Service {
     submitter: string,
     service: string,
     infoHash: string,
-    v: string,
+    v: number,
     r: string,
     s: string
   ) {

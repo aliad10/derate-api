@@ -1,1 +1,2 @@
-export * from './create-platform.dto';
+export * from './execute-request.dto';
+export * from './feedback-request.dto';

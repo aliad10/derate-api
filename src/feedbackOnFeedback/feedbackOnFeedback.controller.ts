@@ -1,12 +1,15 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { HasRoles } from 'src/auth/decorators';
 import { JwtUserDto } from 'src/auth/dtos';
 import { RolesGuard } from 'src/auth/strategies';
 import { PlatformStatus, Role } from 'src/common/constants';
 import { User } from 'src/user/decorators';
-import { FeedbackOnFeedbackRequestDto } from './dto';
+import {
+  ExecuteFeedbackOnFeedbackRequestDto,
+  FeedbackOnFeedbackRequestDto,
+} from './dto';
 import { FeedbackOnFeedbackService } from './feedbackOnFeedback.service';
 @ApiTags('feedbacks-on-feedback')
 @Controller('feedbacks-on-feedback')
@@ -30,6 +33,24 @@ export class FeedbackOnFeedbackController {
       { status: PlatformStatus.PENDING },
       { signer: 1, nonce: 1 },
       {}
+    );
+  }
+
+  @ApiBearerAuth()
+  @HasRoles(Role.SCRIPT)
+  @UseGuards(AuthGuard('jwt'), RolesGuard)
+  @Post('execute')
+  executeAddProjectTransactions(
+    @Body() dto: ExecuteFeedbackOnFeedbackRequestDto
+  ) {
+    return this.feedbackService.executeRequests(
+      dto.nonce,
+      dto.score,
+      dto.prevSubmitter,
+      dto.submitter,
+      dto.service,
+      dto.infoHash,
+      dto.signature
     );
   }
 }

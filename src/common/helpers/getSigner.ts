@@ -30,6 +30,7 @@ export function getSigner(
     primaryType = 'feedbackToService';
     primaryTypeObj = [
       { name: 'nonce', type: 'uint256' },
+      { name: 'score', type: 'uint256' },
       { name: 'infoHash', type: 'string' },
       { name: 'serviceAddress', type: 'address' },
     ];
@@ -37,6 +38,7 @@ export function getSigner(
     primaryType = 'feedbackToFeedback';
     primaryTypeObj = [
       { name: 'nonce', type: 'uint256' },
+      { name: 'score', type: 'uint256' },
       { name: 'infoHash', type: 'string' },
       { name: 'prevSubmitter', type: 'address' },
       { name: 'serviceAddress', type: 'address' },

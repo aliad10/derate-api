@@ -31,6 +31,7 @@ export class FeedbackOnFeedbackService {
       dto.signature,
       {
         nonce: userData.data.feedbackNonce,
+        score: dto.score,
         infoHash: dto.infoHash,
         prevSubmitter: dto.prevSubmitter,
         serviceAddress: dto.serviceAddress,
@@ -73,7 +74,8 @@ export class FeedbackOnFeedbackService {
 
   async executeRequests(
     nonce: number,
-    ptevSubmitter: string,
+    score: number,
+    prevSubmitter: string,
     submitter: string,
     service: string,
     infoHash: string,
@@ -85,7 +87,8 @@ export class FeedbackOnFeedbackService {
 
     await this.web3Service.executeAddFeedbackOnFeedback(
       nonce,
-      ptevSubmitter,
+      score,
+      prevSubmitter,
       submitter,
       service,
       infoHash,

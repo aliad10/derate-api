@@ -200,6 +200,7 @@ export class Web3Service {
 
   async executeAddFeedback(
     nonce: number,
+    score: number,
     submitter: string,
     service: string,
     infoHash: string,
@@ -222,6 +223,7 @@ export class Web3Service {
 
       let transaction = await contract.submitFeedbackToService(
         nonce,
+        score,
         submitter,
         service,
         infoHash,
@@ -247,6 +249,7 @@ export class Web3Service {
   }
   async executeAddFeedbackOnFeedback(
     nonce: number,
+    score: number,
     prevSubmitter: string,
     submitter: string,
     service: string,
@@ -270,6 +273,7 @@ export class Web3Service {
 
       let transaction = await contract.submitFeedbackToFeedback(
         nonce,
+        score,
         prevSubmitter,
         submitter,
         service,

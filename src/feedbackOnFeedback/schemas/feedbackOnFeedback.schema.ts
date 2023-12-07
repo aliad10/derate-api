@@ -12,6 +12,9 @@ export class FeedbackOnFeedback extends Document {
   @Prop({ type: Number, required: true })
   nonce;
 
+  @Prop({ type: Number, required: true })
+  score;
+
   @Prop({ type: String, required: true })
   infoHash;
 

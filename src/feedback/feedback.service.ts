@@ -6,7 +6,7 @@ import { SignerRecoverySelector } from '../common/constants';
 import { getSigner, resultHandler } from '../common/helpers';
 import { UserService } from '../user/user.service';
 
-import { PlatformRequestDto } from './dto/platform-request.dto';
+import { FeedbackRequestDto } from './dto';
 import { FeedbackRepository } from './feedback.repository';
 import { Feedback } from './schemas';
 
@@ -19,7 +19,7 @@ export class FeedbackService {
   ) {}
 
   async submitFeedbackRequest(
-    dto: PlatformRequestDto,
+    dto: FeedbackRequestDto,
     user: JwtUserDto
   ): Promise<Feedback> {
     let userData = await this.userService.findUserById(user.userId, {
@@ -31,6 +31,7 @@ export class FeedbackService {
       dto.signature,
       {
         nonce: userData.data.feedbackNonce,
+        score: dto.score,
         infoHash: dto.infoHash,
         serviceAddress: dto.serviceAddress,
       },
@@ -71,6 +72,7 @@ export class FeedbackService {
 
   async executeRequests(
     nonce: number,
+    score: number,
     submitter: string,
     service: string,
     infoHash: string,
@@ -82,6 +84,7 @@ export class FeedbackService {
 
     await this.web3Service.executeAddFeedback(
       nonce,
+      score,
       submitter,
       service,
       infoHash,

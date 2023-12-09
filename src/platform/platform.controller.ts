@@ -26,8 +26,6 @@ export class PlatformController {
   @UseGuards(AuthGuard('jwt'))
   @Post('')
   addService(@Body() dto: PlatformRequestDto, @User() user: JwtUserDto) {
-    console.log('asas');
-
     return this.platformService.addPlatform(dto, user);
   }
   @ApiBearerAuth()

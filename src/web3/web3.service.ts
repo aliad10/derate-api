@@ -65,7 +65,6 @@ export class Web3Service {
       let transactionResponse = await transaction.wait();
 
       const transactionHash = transactionResponse.transactionHash;
-      console.log('transactionHash', transactionHash);
 
       return resultHandler(200, 'withdraw distributed', transactionHash);
     } catch (error) {
@@ -116,8 +115,6 @@ export class Web3Service {
         .call();
       return feedback;
     } catch (error) {
-      console.log('getFeedbackData func : ', error);
-
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -144,8 +141,6 @@ export class Web3Service {
         .call();
       return feedback;
     } catch (error) {
-      console.log('getPlanterData func : ', error);
-
       throw new InternalServerErrorException(error.message);
     }
   }
@@ -186,7 +181,6 @@ export class Web3Service {
       );
 
       let transactionResponse = await transaction.wait();
-      console.log('transactionResponse', transactionResponse);
 
       const transactionHash = transactionResponse.transactionHash;
 
@@ -236,7 +230,6 @@ export class Web3Service {
       );
 
       let transactionResponse = await transaction.wait();
-      console.log('transactionResponse', transactionResponse);
 
       const transactionHash = transactionResponse.transactionHash;
 
@@ -287,7 +280,6 @@ export class Web3Service {
       );
 
       let transactionResponse = await transaction.wait();
-      console.log('transactionResponse', transactionResponse);
 
       const transactionHash = transactionResponse.transactionHash;
 

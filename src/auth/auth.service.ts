@@ -102,14 +102,12 @@ export class AuthService {
       email,
       emailVerified: true,
     });
-    console.log('userWithVerifiedEmailResult', userWithVerifiedEmailResult);
 
     if (userWithVerifiedEmailResult.statusCode != 404) {
       throw new ForbiddenException('email in use');
     }
 
     const verificationCode = generateToken(100000, 999999);
-    console.log('verificationCode', verificationCode);
 
     await this.mailService.sendEmail(email, verificationCode);
 

@@ -1,4 +1,5 @@
 export * from './checkPublicKey';
+export * from './checkUserTx';
 export * from './generateToken';
 export * from './getCheckedSumAddress';
 export * from './getRandomNonce';

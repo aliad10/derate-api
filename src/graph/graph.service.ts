@@ -2,16 +2,11 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { getServiceDataQuery, getUserDataQuery } from 'src/common/graphQuery';
-import { checkUserTx } from 'src/common/helpers';
 @Injectable()
 export class GraphService {
   constructor(private config: ConfigService) {}
 
   async getUserData(userId: string) {
-    await checkUserTx(
-      '0x5a466362f89a11b18b4958b6b10eebe2dff6f861',
-      '0x5a466362f89a11b18b4958b6b10eebe2dff6f861'
-    );
     const theGraphUrl = this.config.get<string>('THE_GRAPH_URL');
 
     if (!theGraphUrl) {

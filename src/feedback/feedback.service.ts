@@ -3,7 +3,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { Web3Service } from 'src/web3/web3.service';
 import { JwtUserDto } from '../auth/dtos';
 import { SignerRecoverySelector } from '../common/constants';
-import { getSigner, resultHandler } from '../common/helpers';
+import { checkUserTx, getSigner, resultHandler } from '../common/helpers';
 import { UserService } from '../user/user.service';
 
 import { FeedbackRequestDto } from './dto';
@@ -48,6 +48,16 @@ export class FeedbackService {
 
     if (feedbackData.exists)
       throw new ForbiddenException('feedback already submitted');
+
+    let validToSubmitFeedback = await checkUserTx(
+      signer,
+      dto.serviceAddress,
+      100
+    );
+
+    if (!validToSubmitFeedback) {
+      throw new ForbiddenException("user does't interact with service");
+    }
 
     const createdData = await this.feedbackRepository.create({
       ...dto,

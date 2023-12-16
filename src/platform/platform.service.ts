@@ -132,6 +132,37 @@ export class PlatformService {
     );
   }
 
+  async executeRequestsBatch(inputs) {
+    let finalData = [];
+
+    inputs.map((item1) => {
+      let finalDataMember = [];
+      let tempData = [];
+      finalDataMember[0] = item1.submitter;
+
+      // item.submitter
+      item1.data.map((item2, index2) => {
+        const r = "0x" + item2.signature.substring(0, 64);
+        const s = "0x" + item2.signature.substring(64, 128);
+        const v = parseInt(item2.signature.substring(128, 130), 16);
+
+        tempData[index2] = [
+          item2.nonce,
+          item2.service,
+          item2.infoHash,
+          v,
+          r,
+          s,
+        ];
+      });
+      finalDataMember[1] = tempData;
+      finalData.push(finalDataMember);
+    });
+
+    await this.web3Service.executeAddServiceBatch(finalData);
+    console.log("final data", finalData);
+  }
+
   async getPlatformSubmissionRequests(
     filter,
     sortOption,

@@ -207,6 +207,35 @@ export class Web3Service {
     }
   }
 
+  async executeAddServiceBatch(inputs) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        "DERATE_CONTRACT_ADDRESS"
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      let transaction = await contract.addServiceBatch(inputs, {
+        gasLimit: 2e7,
+      });
+
+      let transactionResponse = await transaction.wait();
+
+      const transactionHash = transactionResponse.transactionHash;
+
+      return resultHandler(200, "service added", transactionHash);
+    } catch (error) {
+      console.log("add service func : ", error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
   async executeAddFeedback(
     nonce: number,
     score: number,

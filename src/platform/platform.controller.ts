@@ -17,6 +17,7 @@ import { User } from "src/user/decorators";
 import { ExecuteRequestDto } from "./dto";
 import { PlatformRequestDto } from "./dto/platform-request.dto";
 import { PlatformService } from "./platform.service";
+import { ExecuteRequestsBatchDto } from "./dto/execute-request-batch.dto";
 @ApiTags("services")
 @Controller("services")
 export class PlatformController {
@@ -60,5 +61,12 @@ export class PlatformController {
       dto.infoHash,
       dto.signature
     );
+  }
+  // @ApiBearerAuth()
+  // @HasRoles(Role.SCRIPT)
+  // @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @Post("execute-batch")
+  executeAddProjectTransactionsBatch(@Body() dto: ExecuteRequestsBatchDto[]) {
+    return this.platformService.executeRequestsBatch(dto);
   }
 }

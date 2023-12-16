@@ -5,7 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
-} from 'class-validator';
+} from "class-validator";
 
 export class UserDto {
   @IsString()
@@ -40,7 +40,9 @@ export class UserDto {
   @IsOptional()
   @IsString()
   twitter?;
-
+  @IsOptional()
+  @IsNumber()
+  userRole?;
   @IsOptional()
   @IsBoolean()
   emailCodeIssuedAt?;

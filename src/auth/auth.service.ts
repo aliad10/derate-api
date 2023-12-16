@@ -13,7 +13,12 @@ import { UserService } from './../user/user.service';
 import { Result } from 'src/database/interfaces/result.interface';
 import { MailService } from 'src/mail/mail.service';
 import { Web3Service } from 'src/web3/web3.service';
-import { AuthErrorMessages, Messages, Numbers } from './../common/constants';
+import {
+  AuthErrorMessages,
+  Messages,
+  Numbers,
+  Role,
+} from './../common/constants';
 import {
   checkPublicKey,
   generateToken,
@@ -144,7 +149,7 @@ export class AuthService {
     return resultHandler(200, 'verified', '');
   }
 
-  async connectTwitter(user: JwtUserDto, twitter: string) {
+  async connectTwitter(twitter: string) {
     const userWithTwitterAccount = await this.userService.findUser({
       twitter,
     });
@@ -152,8 +157,10 @@ export class AuthService {
     if (userWithTwitterAccount.statusCode != 404) {
       throw new ForbiddenException('twitter already connected');
     }
-
-    await this.userService.updateUserById(user.userId, { twitter });
+    const user = await this.userService.findUser({
+      twitter: { $exists: false },
+    });
+    await this.userService.updateUserById(user.data.id, { twitter });
   }
 
   async getUserRole(user: JwtUserDto) {
@@ -161,7 +168,17 @@ export class AuthService {
     if (!userData.data.emailVerified || !userData.data.twitter) {
       throw new ForbiddenException('incomplete verification');
     }
-    return await this.web3Service.grantUserRole(userData.data.walletAddress);
+    let result = await this.web3Service.grantUserRole(
+      userData.data.walletAddress
+    );
+
+    if (result.statusCode == 200) {
+      await this.userService.updateUserById(userData.data.id, {
+        userRole: Role.USER,
+      });
+    }
+
+    return 'role granted';
   }
 
   private async getAccessToken(

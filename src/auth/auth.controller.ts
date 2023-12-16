@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Redirect,
   Req,
   Res,
   UseGuards,
@@ -60,11 +61,10 @@ export class AuthController {
   async twitterLoginCallback(@Req() req, @Res() res) {
     // Successful authentication, redirect home
     const user = req.user;
-    console.log("user", user.displayName);
+    console.log("user", user.username);
 
+    this.authService.connectTwitter(user.username);
     // res.send(user ? `Hello, ${user.displayName}!` : 'Home Page');
-
-    // res.redirect('/');
   }
 
   @ApiBearerAuth()

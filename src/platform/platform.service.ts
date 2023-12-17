@@ -3,22 +3,23 @@ import {
   ForbiddenException,
   Injectable,
   NotFoundException,
-} from "@nestjs/common";
+} from '@nestjs/common';
 
-import { PlatformRepository } from "./platform.repository";
+import { PlatformRepository } from './platform.repository';
 
-import { Web3Service } from "src/web3/web3.service";
-import { JwtUserDto } from "../auth/dtos";
+import { Web3Service } from 'src/web3/web3.service';
+import { JwtUserDto } from '../auth/dtos';
 import {
   PlatformStatus,
   Role,
   SignerRecoverySelector,
-} from "../common/constants";
-import { getSigner, resultHandler } from "../common/helpers";
-import { UserService } from "../user/user.service";
+} from '../common/constants';
+import { getSigner, resultHandler } from '../common/helpers';
+import { UserService } from '../user/user.service';
 
-import { PlatformRequestDto } from "./dto/platform-request.dto";
-import { Platform } from "./schemas";
+import { ExecuteRequestsBatchDto } from './dto';
+import { PlatformRequestDto } from './dto/platform-request.dto';
+import { Platform } from './schemas';
 
 @Injectable()
 export class PlatformService {
@@ -39,7 +40,7 @@ export class PlatformService {
     });
 
     if (userData.data.userRole != Role.USER) {
-      throw new ForbiddenException("invalid role");
+      throw new ForbiddenException('invalid role');
     }
 
     const signer = getSigner(
@@ -53,7 +54,7 @@ export class PlatformService {
     );
 
     if (signer.toLowerCase() !== user.walletAddress.toLowerCase())
-      throw new ForbiddenException("invalid signer");
+      throw new ForbiddenException('invalid signer');
 
     let serviceRequest = await this.platformRepository.findOne({
       serviceAddress: dto.serviceAddress,
@@ -61,7 +62,7 @@ export class PlatformService {
     });
 
     if (serviceRequest) {
-      throw new ForbiddenException("service request exists");
+      throw new ForbiddenException('service request exists');
     }
 
     const serviceData = await this.web3Service.getServiceData(
@@ -69,7 +70,7 @@ export class PlatformService {
     );
 
     if (serviceData.exists)
-      throw new ForbiddenException("service already exists");
+      throw new ForbiddenException('service already exists');
 
     const createdData = await this.platformRepository.create({
       ...dto,
@@ -89,17 +90,17 @@ export class PlatformService {
       _id: platformId,
     });
 
-    if (!platformData) throw new NotFoundException("not found");
+    if (!platformData) throw new NotFoundException('not found');
 
     if (platformData.status != PlatformStatus.PENDING)
-      throw new ConflictException("invalid status");
+      throw new ConflictException('invalid status');
 
     await this.platformRepository.updateOne(
       { _id: platformId },
       { $set: { status: PlatformStatus.REJECTED } }
     );
 
-    return resultHandler(200, "platform rejected", "");
+    return resultHandler(200, 'platform rejected', '');
   }
 
   async updateStatus(signer: string, nonce: number, status) {
@@ -107,7 +108,7 @@ export class PlatformService {
       { signer, nonce },
       { $set: { status } }
     );
-    return resultHandler(200, "status updated", result);
+    return resultHandler(200, 'status updated', result);
   }
 
   async executeRequests(
@@ -117,8 +118,8 @@ export class PlatformService {
     infoHash: string,
     signature: string
   ) {
-    const r = "0x" + signature.substring(0, 64);
-    const s = "0x" + signature.substring(64, 128);
+    const r = '0x' + signature.substring(0, 64);
+    const s = '0x' + signature.substring(64, 128);
     const v = parseInt(signature.substring(128, 130), 16);
 
     await this.web3Service.executeAddService(
@@ -132,7 +133,7 @@ export class PlatformService {
     );
   }
 
-  async executeRequestsBatch(inputs) {
+  async executeRequestsBatch(inputs: ExecuteRequestsBatchDto[]) {
     let finalData = [];
 
     inputs.map((item1) => {
@@ -142,8 +143,8 @@ export class PlatformService {
 
       // item.submitter
       item1.data.map((item2, index2) => {
-        const r = "0x" + item2.signature.substring(0, 64);
-        const s = "0x" + item2.signature.substring(64, 128);
+        const r = '0x' + item2.signature.substring(0, 64);
+        const s = '0x' + item2.signature.substring(64, 128);
         const v = parseInt(item2.signature.substring(128, 130), 16);
 
         tempData[index2] = [
@@ -160,7 +161,6 @@ export class PlatformService {
     });
 
     await this.web3Service.executeAddServiceBatch(finalData);
-    console.log("final data", finalData);
   }
 
   async getPlatformSubmissionRequests(

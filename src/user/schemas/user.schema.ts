@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { Document } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -29,12 +29,12 @@ export class User extends Document {
   @Prop({ type: Number })
   userRole;
 
-  @Prop({ type: Number, default: 0, required: true })
+  @Prop({ type: Number, default: 1, required: true })
   serviceNonce;
 
-  @Prop({ type: Number, default: 0, required: true })
+  @Prop({ type: Number, default: 1, required: true })
   feedbackNonce;
-  @Prop({ type: Number, default: 0, required: true })
+  @Prop({ type: Number, default: 1, required: true })
   feedbackOnFeedBackNonce;
 
   @Prop({ type: Date, default: () => new Date(), required: true })

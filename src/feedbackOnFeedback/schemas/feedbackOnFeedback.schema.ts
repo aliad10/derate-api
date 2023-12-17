@@ -22,7 +22,7 @@ export class FeedbackOnFeedback extends Document {
   serviceAddress;
 
   @Prop({ type: String, required: true })
-  prevSubmitterAddress;
+  prevSubmitter;
 
   @Prop({ type: String, required: true })
   signature;

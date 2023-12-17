@@ -5,7 +5,9 @@ class DataDto {
   @IsInt()
   @ApiProperty()
   nonce: number;
-
+  @IsInt()
+  @ApiProperty()
+  score: number;
   @IsString()
   @ApiProperty()
   service: string;
@@ -19,7 +21,7 @@ class DataDto {
   signature: string;
 }
 
-export class ExecuteRequestsBatchDto {
+export class ExecuteFeedbackRequestsBatchDto {
   @IsString()
   @ApiProperty()
   submitter: string;

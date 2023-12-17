@@ -1,14 +1,17 @@
-import { ForbiddenException, Injectable } from "@nestjs/common";
+import { ForbiddenException, Injectable } from '@nestjs/common';
 
-import { Web3Service } from "src/web3/web3.service";
-import { JwtUserDto } from "../auth/dtos";
-import { Role, SignerRecoverySelector } from "../common/constants";
-import { checkUserTx, getSigner, resultHandler } from "../common/helpers";
-import { UserService } from "../user/user.service";
-import { FeedbackOnFeedbackRequestDto } from "./dto";
+import { Web3Service } from 'src/web3/web3.service';
+import { JwtUserDto } from '../auth/dtos';
+import { Role, SignerRecoverySelector } from '../common/constants';
+import { checkUserTx, getSigner, resultHandler } from '../common/helpers';
+import { UserService } from '../user/user.service';
+import {
+  ExecuteFeedbackOnFeedbackRequestsBatchDto,
+  FeedbackOnFeedbackRequestDto,
+} from './dto';
 
-import { FeedbackOnFeedbackRepository } from "./feedbackOnFeedback.repository";
-import { FeedbackOnFeedback } from "./schemas";
+import { FeedbackOnFeedbackRepository } from './feedbackOnFeedback.repository';
+import { FeedbackOnFeedback } from './schemas';
 
 @Injectable()
 export class FeedbackOnFeedbackService {
@@ -29,13 +32,13 @@ export class FeedbackOnFeedbackService {
     });
 
     if (userData.data.userRole != Role.USER) {
-      throw new ForbiddenException("invalid role");
+      throw new ForbiddenException('invalid role');
     }
 
     const signer = getSigner(
       dto.signature,
       {
-        nonce: userData.data.feedbackNonce,
+        nonce: userData.data.feedbackOnFeedBackNonce,
         score: dto.score,
         infoHash: dto.infoHash,
         prevSubmitter: dto.prevSubmitter,
@@ -45,7 +48,7 @@ export class FeedbackOnFeedbackService {
     );
 
     if (signer.toLowerCase() !== user.walletAddress.toLowerCase())
-      throw new ForbiddenException("invalid signer");
+      throw new ForbiddenException('invalid signer');
 
     const feedbackData = await this.web3Service.getFeedbackOnFeedbackData(
       signer,
@@ -54,7 +57,7 @@ export class FeedbackOnFeedbackService {
     );
 
     if (feedbackData.exists)
-      throw new ForbiddenException("feedback already submitted");
+      throw new ForbiddenException('feedback already submitted');
 
     let validToSubmitFeedback = await checkUserTx(
       signer,
@@ -84,7 +87,7 @@ export class FeedbackOnFeedbackService {
       { signer, nonce },
       { $set: { status } }
     );
-    return resultHandler(200, "status updated", result);
+    return resultHandler(200, 'status updated', result);
   }
 
   async executeRequests(
@@ -96,8 +99,8 @@ export class FeedbackOnFeedbackService {
     infoHash: string,
     signature: string
   ) {
-    const r = "0x" + signature.substring(0, 64);
-    const s = "0x" + signature.substring(64, 128);
+    const r = '0x' + signature.substring(0, 64);
+    const s = '0x' + signature.substring(64, 128);
     const v = parseInt(signature.substring(128, 130), 16);
 
     await this.web3Service.executeAddFeedbackOnFeedback(
@@ -113,6 +116,40 @@ export class FeedbackOnFeedbackService {
     );
   }
 
+  async executeRequestsBatch(
+    inputs: ExecuteFeedbackOnFeedbackRequestsBatchDto[]
+  ) {
+    let finalData = [];
+
+    inputs.map((item1) => {
+      let finalDataMember = [];
+      let tempData = [];
+      finalDataMember[0] = item1.submitter;
+
+      // item.submitter
+      item1.data.map((item2, index2) => {
+        const r = '0x' + item2.signature.substring(0, 64);
+        const s = '0x' + item2.signature.substring(64, 128);
+        const v = parseInt(item2.signature.substring(128, 130), 16);
+
+        tempData[index2] = [
+          item2.nonce,
+          item2.score,
+          item2.prevSubmitter,
+          item2.service,
+          item2.infoHash,
+          v,
+          r,
+          s,
+        ];
+      });
+      finalDataMember[1] = tempData;
+      finalData.push(finalDataMember);
+    });
+
+    await this.web3Service.executeAddFeedbackOnFeedbackBatch(finalData);
+    return 'executed';
+  }
   async getFeedbackOnFeedbackSubmissionRequests(
     filter,
     sortOption,

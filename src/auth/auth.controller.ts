@@ -4,31 +4,30 @@ import {
   Get,
   Param,
   Post,
-  Redirect,
   Req,
   Res,
   UseGuards,
-} from "@nestjs/common";
-import { AuthGuard } from "@nestjs/passport";
-import { ApiBearerAuth, ApiTags } from "@nestjs/swagger";
-import { Result } from "src/database/interfaces/result.interface";
-import { User } from "src/user/decorators";
-import { AuthService } from "./auth.service";
-import { JwtUserDto, LoginWithWalletDto } from "./dtos";
-import { GetNonceDto } from "./dtos/get-nonce.dto";
-@ApiTags("auth")
+} from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Result } from 'src/database/interfaces/result.interface';
+import { User } from 'src/user/decorators';
+import { AuthService } from './auth.service';
+import { JwtUserDto, LoginWithWalletDto } from './dtos';
+import { GetNonceDto } from './dtos/get-nonce.dto';
+@ApiTags('auth')
 @Controller()
 export class AuthController {
   constructor(private authService: AuthService) {}
 
-  @Get("nonce/:wallet")
-  getNonce(@Param("wallet") wallet: string): Promise<Result<GetNonceDto>> {
+  @Get('nonce/:wallet')
+  getNonce(@Param('wallet') wallet: string): Promise<Result<GetNonceDto>> {
     return this.authService.getNonce(wallet);
   }
 
-  @Post("login/:wallet")
+  @Post('login/:wallet')
   loginWithWallet(
-    @Param("wallet") wallet: string,
+    @Param('wallet') wallet: string,
     @Body() dto: LoginWithWalletDto
   ) {
     const signature: string = dto.signature;
@@ -37,39 +36,38 @@ export class AuthController {
   //------------------------------------------ ************************ ------------------------------------------//
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard("jwt"))
-  @Post("email-verify-request/:email")
+  @UseGuards(AuthGuard('jwt'))
+  @Post('email-verify-request/:email')
   emailVerificationRequest(
     @User() user: JwtUserDto,
-    @Param("email") email: string
+    @Param('email') email: string
   ) {
     return this.authService.verifyEmailRequest(user, email);
   }
   @ApiBearerAuth()
-  @UseGuards(AuthGuard("jwt"))
-  @Post("email-verify/:token")
-  emailVerification(@User() user: JwtUserDto, @Param("token") token: string) {
+  @UseGuards(AuthGuard('jwt'))
+  @Post('email-verify/:token')
+  emailVerification(@User() user: JwtUserDto, @Param('token') token: string) {
     return this.authService.verifyEmail(user, token);
   }
 
-  @Get("twitter")
-  @UseGuards(AuthGuard("twitter"))
+  @Get('twitter')
+  @UseGuards(AuthGuard('twitter'))
   async twitterLogin() {}
 
-  @Get("twitter/return")
-  @UseGuards(AuthGuard("twitter"))
+  @Get('twitter/return')
+  @UseGuards(AuthGuard('twitter'))
   async twitterLoginCallback(@Req() req, @Res() res) {
     // Successful authentication, redirect home
     const user = req.user;
-    console.log("user", user.username);
 
     this.authService.connectTwitter(user.username);
     // res.send(user ? `Hello, ${user.displayName}!` : 'Home Page');
   }
 
   @ApiBearerAuth()
-  @UseGuards(AuthGuard("jwt"))
-  @Post("request-user-role")
+  @UseGuards(AuthGuard('jwt'))
+  @Post('request-user-role')
   requestUserRole(@User() user: JwtUserDto) {
     return this.authService.getUserRole(user);
   }

@@ -272,11 +272,42 @@ export class Web3Service {
 
       return resultHandler(200, "feedback to service added", transactionHash);
     } catch (error) {
-      console.log("add service func : ", error);
+      console.log("add feedback to service func : ", error);
 
       throw new InternalServerErrorException(error.message);
     }
   }
+
+  async executeAddFeedbackBatch(inputs) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        "DERATE_CONTRACT_ADDRESS"
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      let transaction = await contract.submitFeedbackToServiceBatch(inputs, {
+        gasLimit: 2e7,
+      });
+
+      let transactionResponse = await transaction.wait();
+
+      const transactionHash = transactionResponse.transactionHash;
+
+      return resultHandler(200, "feedback to service added", transactionHash);
+    } catch (error) {
+      console.log("add feedback to service func : ", error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
   async executeAddFeedbackOnFeedback(
     nonce: number,
     score: number,
@@ -322,7 +353,37 @@ export class Web3Service {
 
       return resultHandler(200, "feedback on feedback added", transactionHash);
     } catch (error) {
-      console.log("add service func : ", error);
+      console.log("add feedback on feedback func : ", error);
+
+      throw new InternalServerErrorException(error.message);
+    }
+  }
+
+  async executeAddFeedbackOnFeedbackBatch(inputs) {
+    try {
+      const contractAddress = this.configService.get<string>(
+        "DERATE_CONTRACT_ADDRESS"
+      );
+
+      const contractABI = DerateContract.abi;
+
+      const contract = new ethers.Contract(
+        contractAddress,
+        contractABI,
+        this.signer
+      );
+
+      let transaction = await contract.submitFeedbackToFeedbackBatch(inputs, {
+        gasLimit: 2e7,
+      });
+
+      let transactionResponse = await transaction.wait();
+
+      const transactionHash = transactionResponse.transactionHash;
+
+      return resultHandler(200, "feedback to feedback added", transactionHash);
+    } catch (error) {
+      console.log("add feedback on feedback func : ", error);
 
       throw new InternalServerErrorException(error.message);
     }

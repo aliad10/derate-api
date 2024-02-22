@@ -7,8 +7,8 @@ export class MailController {
 
   @Get("/mail")
   async sendWelcomeEmail(): Promise<string> {
-    const email = "abdolazim010@gmail.com";
-    const name = "Ali ad";
+    const email = "your.mail@example.com";
+    const name = "name";
 
     await this.mailService.sendEmail(email, name);
 

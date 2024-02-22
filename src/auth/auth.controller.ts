@@ -59,12 +59,10 @@ export class AuthController {
   @Get("twitter/return")
   @UseGuards(AuthGuard("twitter"))
   async twitterLoginCallback(@Req() req, @Res() res) {
-    // Successful authentication, redirect home
     const user = req.user;
     console.log("user", user.username);
 
     this.authService.connectTwitter(user.username);
-    // res.send(user ? `Hello, ${user.displayName}!` : 'Home Page');
   }
 
   @ApiBearerAuth()

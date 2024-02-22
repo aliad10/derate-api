@@ -10,17 +10,14 @@ import { PassportModule } from "@nestjs/passport";
 import { MailModule } from "src/mail/mail.module";
 import { Web3Module } from "src/web3/web3.module";
 import { DatabaseModule } from "./../database/database.module";
-import { UserMobileRepository } from "./auth.repository";
-import { UserMobile, UserMobileSchema } from "./schemas";
+
 import { AtStrategy, RolesGuard } from "./strategies";
 import { TwitterStrategy } from "./strategies/twitter.guard";
 @Module({
   imports: [
     UserModule,
     JwtModule.register({}),
-    MongooseModule.forFeature([
-      { name: UserMobile.name, schema: UserMobileSchema },
-    ]),
+
     PassportModule.register({ defaultStrategy: "twitter" }),
     DatabaseModule,
     MailModule,
@@ -28,7 +25,6 @@ import { TwitterStrategy } from "./strategies/twitter.guard";
   ],
   controllers: [AuthController],
   providers: [
-    UserMobileRepository,
     AuthService,
     ConfigService,
     AtStrategy,

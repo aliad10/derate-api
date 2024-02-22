@@ -48,13 +48,10 @@ export class Web3Service {
   }
 
   async grantUserRole(to: string) {
-    console.log("thos.signer", this.signer);
-
     try {
       const contractAddress = this.configService.get<string>(
         "ACCESS_RESTRICTION_CONTRACT_ADDRESS"
       );
-      console.log("contractttt", contractAddress);
 
       const contractABI = AccessRestrictionContract.abi;
 
@@ -64,13 +61,9 @@ export class Web3Service {
         this.signer
       );
 
-      console.log("contract", contract);
-
       let transaction = await contract.giveUserRole(to, {
         gasLimit: 2e6,
       });
-
-      console.log("transaaaaa", transaction);
 
       let transactionResponse = await transaction.wait();
 

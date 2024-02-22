@@ -62,9 +62,9 @@ export class PlatformController {
       dto.signature
     );
   }
-  // @ApiBearerAuth()
-  // @HasRoles(Role.SCRIPT)
-  // @UseGuards(AuthGuard("jwt"), RolesGuard)
+  @ApiBearerAuth()
+  @HasRoles(Role.SCRIPT)
+  @UseGuards(AuthGuard("jwt"), RolesGuard)
   @Post("execute-batch")
   executeAddProjectTransactionsBatch(@Body() dto: ExecuteRequestsBatchDto[]) {
     return this.platformService.executeRequestsBatch(dto);

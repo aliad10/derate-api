@@ -42,7 +42,6 @@ export class FeedbackService {
       },
       SignerRecoverySelector.FEEDBACK
     );
-    console.log("sssss", signer);
 
     if (signer.toLowerCase() !== user.walletAddress.toLowerCase())
       throw new ForbiddenException("invalid signer");

@@ -1,28 +1,28 @@
-import { NestFactory } from '@nestjs/core';
-import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
-import { NestExpressApplication } from '@nestjs/platform-express';
-import { join } from 'path';
+import { NestFactory } from "@nestjs/core";
+import { AppModule } from "./app.module";
+import { ValidationPipe } from "@nestjs/common";
+import { NestExpressApplication } from "@nestjs/platform-express";
+import { join } from "path";
 import {
   DocumentBuilder,
   SwaggerDocumentOptions,
   SwaggerModule,
-} from '@nestjs/swagger';
+} from "@nestjs/swagger";
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   app.useGlobalPipes(new ValidationPipe({ whitelist: true }));
-  app.useStaticAssets(join(__dirname, '..', 'public'));
+  app.useStaticAssets(join(__dirname, "..", "public"));
 
   const config = new DocumentBuilder()
-    .setTitle('Derate API')
-    .setDescription('API for Derate')
-    .setVersion('0.1.0')
-    .addTag('Derate')
-    .setContact('Derate', 'abdolazim010.ali@gmail.com', '')
+    .setTitle("Derate API")
+    .setDescription("API for Derate")
+    .setVersion("0.1.0")
+    .addTag("Derate")
+    .setContact("Derate", "", "abdolazim010.ali@gmail.com")
     .addBearerAuth()
-    .addServer('http://localhost:3000')
+    .addServer("http://localhost:3000")
     .build();
 
   const options: SwaggerDocumentOptions = {
@@ -31,7 +31,7 @@ async function bootstrap() {
 
   const document = SwaggerModule.createDocument(app, config, options);
 
-  SwaggerModule.setup('api', app, document);
+  SwaggerModule.setup("api", app, document);
 
   app.enableCors();
 

@@ -1,0 +1,4 @@
+export const Numbers = {
+  LOGIN_TOKEN_EXPIRATION_BOUND: 86400000,
+  EMAIL_TOKEN_VALID_TIME: 3 * 60 * 1000,
+};

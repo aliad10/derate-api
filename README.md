@@ -1,18 +1,58 @@
-# Derate Off-Chain APIs
-off-chain apis for Derate protocol for submitting feedbacks and projects in the blockchain.
+## Description
 
-# Installation
-npm install
+PXU backend api
 
-npm run start
+## Installation
 
-# API
-availble at http://localhost:3000/api after running project.
+```bash
+$ npm install
+```
 
-# Author
-Ali Abdolzimi
+## Running the app
 
-# Contact
-Email: abdolazim010.ali@gmail.com
+```bash
+# development
+$ npm run start
 
-LinkedIn: https://www.linkedin.com/in/ali-abdolazimi-8004421b7
+# watch mode
+$ npm run start:dev
+```
+## Running the Listener
+
+```bash
+# run
+npx nestjs-command listener:run
+
+# or using pm2
+
+pm2 start ./pm2-listener.config.js
+
+```
+
+## deploy or run cronjob for every Vault
+
+```bash
+
+# run
+npx nestjs-command cloneCronJob:run
+
+# or using pm2 (replace VOX with appropriate gameType)
+
+type=VOX pm2 start ./pm2-cronjob.config.js
+
+```
+
+
+## deploy or run getTotalStake cronjob
+
+```bash
+
+# run
+npx nestjs-command getTotalStack:run
+
+# or using pm2
+
+pm2 start ./pm2-total-stake.config.js
+
+```
+

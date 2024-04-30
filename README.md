@@ -25,9 +25,7 @@ $ npm run start:dev
 $ npx nestjs-command listener:run
 
 # or using pm2
-
 $ pm2 start ./pm2-listener.config.js
-
 ```
 
 ## deploy or run cronjob for every Vault
